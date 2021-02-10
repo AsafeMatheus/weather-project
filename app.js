@@ -6,6 +6,7 @@ const app = express()
 
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(express.static("public"))
+app.set('view engine', 'ejs')
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html')
@@ -20,33 +21,19 @@ app.post('/', (req, res) => {
         console.log('status code: ' +response.statusCode)
         response.on('data', (data) => {
             const weatherData = JSON.parse(data)
+            const weatherCity = weatherData.name
+            const weatherCountry = weatherData.sys.country
+            const weatherTemperature = weatherData.main.temp
+            const weatherFeelsLike = weatherData.main.feels_like
             const emoji = `http://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`
 
-            res.send(`
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta http-equiv="X-UA-Compatible" content="IE=edge">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Weather Project</title>
-
-                <link rel="stylesheet" href="style.css">
-            </head>
-            <body>
-                <main>
-                    <img src="${emoji}">
-                    <h1>${weatherData.name} </h1>
-                    <hr>
-                    <ul>
-                        <li>country: ${weatherData.sys.country}</li>
-                        <li>temperature: ${weatherData.main.temp}°C</li>
-                        <li>feels like: ${weatherData.main.feels_like}°C</li>
-                    </ul>
-                </main>
-            </body>
-            </html>
-            `)
+            res.render('response', {
+                weatheremoji: emoji,
+                weatherCity: weatherCity,
+                weatherCountry: weatherCountry,
+                weatherTemperature: weatherTemperature,
+                weatherFeelsLike: weatherFeelsLike
+            })
         })
     })
 })
