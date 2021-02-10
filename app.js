@@ -19,22 +19,26 @@ app.post('/', (req, res) => {
 
     https.get(url, (response) => {
         console.log('status code: ' +response.statusCode)
-        response.on('data', (data) => {
-            const weatherData = JSON.parse(data)
-            const weatherCity = weatherData.name
-            const weatherCountry = weatherData.sys.country
-            const weatherTemperature = weatherData.main.temp
-            const weatherFeelsLike = weatherData.main.feels_like
-            const emoji = `http://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`
+        if (response.statusCode == 200){
+            response.on('data', (data) => {
+                const weatherData = JSON.parse(data)
+                const weatherCity = weatherData.name
+                const weatherCountry = weatherData.sys.country
+                const weatherTemperature = weatherData.main.temp
+                const weatherFeelsLike = weatherData.main.feels_like
+                const emoji = `http://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`
 
-            res.render('response', {
-                weatheremoji: emoji,
-                weatherCity: weatherCity,
-                weatherCountry: weatherCountry,
-                weatherTemperature: weatherTemperature,
-                weatherFeelsLike: weatherFeelsLike
+                res.render('response', {
+                    weatheremoji: emoji,
+                    weatherCity: weatherCity,
+                    weatherCountry: weatherCountry,
+                    weatherTemperature: weatherTemperature,
+                    weatherFeelsLike: weatherFeelsLike
+                })
             })
-        })
+        } else{
+            res.sendFile(__dirname + '/failure.html')
+        }
     })
 })
 
